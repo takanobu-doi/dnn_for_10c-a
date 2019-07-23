@@ -9,12 +9,13 @@ from keras.callbacks import CSVLogger
 path = "./"
 
 cell = np.load(path+"sca-0_single_tot.npy")
-result = np.loadtxt(path+"sca-0_single_teachervalue.dat")[:,3:]
+point = np.loadtxt(path+"sca-0_single_teachervalue.dat")[:,3:]
+print(cell.shape)
 shape = cell[0][0:1].shape
 cell_test = cell[2700:]
-result_test = result[2700:]
+point_test = point[2700:]
 cell = cell[:2700]
-result = result[:2700]
+point = point[:2700]
 
 Input_a = Input(shape=shape)
 Input_c = Input(shape=shape)
