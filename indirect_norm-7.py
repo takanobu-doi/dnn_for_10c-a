@@ -5,6 +5,23 @@ from keras.models import Model
 from keras.layers import Input,Conv2D,MaxPooling2D
 from keras.layers import Flatten,Dense,Dropout,concatenate
 from keras.callbacks import CSVLogger
+import keras.backend as K
+
+
+def rms_pred_scat(y_true, y_pred):
+    factor = np.array([256.,1024.,256.,1024.,256.,1024.,256.,1024.])
+    pixel_to_mm = np.array([0.4,0.174,0.4,0.174,0.4,0.174,0.4,0.174])
+    mm = K.eval(y_true-y_pred)*factor*pixel_to_mm
+    rms = K.variable(mm[:,0:3])
+    return K.sqrt(K.mean(K.square(rms)))
+
+def rms_pred_stop(y_true, y_pred):
+    factor = np.array([256.,1024.,256.,1024.,256.,1024.,256.,1024.])
+    pixel_to_mm = np.array([0.4,0.174,0.4,0.174,0.4,0.174,0.4,0.174])
+    mm = K.eval(y_true-y_pred)*factor*pixel_to_mm
+    rms = K.variable(mm[:,4:7])
+    return K.sqrt(K.mean(K.square(rms)))
+
 
 path = "./"
 
@@ -53,7 +70,7 @@ z = concatenate([x,y])
 Output = Dense(8,activation="relu")(z)
 
 model = Model(inputs=[Input_a,Input_c],outputs=Output)
-model.compile(loss="mse",optimizer="adadelta")
+model.compile(loss="mse",optimizer="adadelta",metrics=[rms_scat,rms_stop])
 csvlogger = CSVLogger("indirect_norm-7.csv")
 
 factor = [256.,1024.,256.,1024.,256.,1024.,256.,1024.]
