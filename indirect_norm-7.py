@@ -77,7 +77,7 @@ factor = [256.,1024.,256.,1024.,256.,1024.,256.,1024.]
 factor = np.array(factor)
 
 start = time.time()
-model.fit([cell[:,0:1],cell[:,1:2]],point/factor,epochs=500,batch_size=64,
+model.fit([cell[:,0:1],cell[:,1:2]],point/factor,epochs=100,batch_size=64,
           validation_data=[[cell_test[:,0:1],cell_test[:,1:2]],point_test/factor],
           callbacks=[csvlogger])
 end = time.time()
