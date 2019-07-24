@@ -9,17 +9,19 @@ import keras.backend as K
 
 
 def rms_pred_scat(y_true, y_pred):
-    factor = np.array([256.,1024.,256.,1024.,256.,1024.,256.,1024.])
-    pixel_to_mm = np.array([0.4,0.174,0.4,0.174,0.4,0.174,0.4,0.174])
-    mm = K.eval(y_true-y_pred)*factor*pixel_to_mm
-    rms = K.variable(mm[:,0:3])
+    factor = K.variable([[256.,1024.,256.,1024.,256.,1024.,256.,1024.]])
+    pixel_to_mm = K.variable([[0.4,0.174,0.4,0.174,0.4,0.174,0.4,0.174]])
+    mm = (y_true-y_pred)*factor*pixel_to_mm
+    mask = K.variable([[1,1,1,0,0,0,0,0]])
+    rms = mm*mask
     return K.sqrt(K.mean(K.square(rms)))
 
 def rms_pred_stop(y_true, y_pred):
-    factor = np.array([256.,1024.,256.,1024.,256.,1024.,256.,1024.])
-    pixel_to_mm = np.array([0.4,0.174,0.4,0.174,0.4,0.174,0.4,0.174])
-    mm = K.eval(y_true-y_pred)*factor*pixel_to_mm
-    rms = K.variable(mm[:,4:7])
+    factor = K.variable([[256.,1024.,256.,1024.,256.,1024.,256.,1024.]])
+    pixel_to_mm = K.variable([[0.4,0.174,0.4,0.174,0.4,0.174,0.4,0.174]])
+    mm = (y_true-y_pred)*factor*pixel_to_mm
+    mask = K.variable([[0,0,0,0,1,1,1,0]])
+    rms = mm*mask
     return K.sqrt(K.mean(K.square(rms)))
 
 
@@ -34,6 +36,7 @@ point_test = point[2700:]
 cell = cell[:2700]
 point = point[:2700]
 
+print(shape)
 Input_a = Input(shape=shape)
 Input_c = Input(shape=shape)
 x = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(Input_a)
@@ -70,7 +73,7 @@ z = concatenate([x,y])
 Output = Dense(8,activation="relu")(z)
 
 model = Model(inputs=[Input_a,Input_c],outputs=Output)
-model.compile(loss="mse",optimizer="adadelta",metrics=[rms_scat,rms_stop])
+model.compile(loss="mse",optimizer="adadelta",metrics=[rms_pred_scat,rms_pred_stop])
 csvlogger = CSVLogger("indirect_norm-7.csv")
 
 factor = [256.,1024.,256.,1024.,256.,1024.,256.,1024.]
