@@ -61,17 +61,41 @@ x = Conv2D(filters=40,kernel_size=16,padding="same",
            activation="relu",data_format="channels_first")(x)
 y = Conv2D(filters=40,kernel_size=16,padding="same",
            activation="relu",data_format="channels_first")(y)
+x = Conv2D(filters=40,kernel_size=16,padding="same",
+           activation="relu",data_format="channels_first")(x)
+y = Conv2D(filters=40,kernel_size=16,padding="same",
+           activation="relu",data_format="channels_first")(y)
+x = Conv2D(filters=40,kernel_size=5,padding="same",
+           activation="relu",data_format="channels_first")(x)
+y = Conv2D(filters=40,kernel_size=5,padding="same",
+           activation="relu",data_format="channels_first")(y)
 x = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(x)
 y = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(y)
 x = Conv2D(filters=40,kernel_size=8,padding="same",
            activation="relu",data_format="channels_first")(x)
 y = Conv2D(filters=40,kernel_size=8,padding="same",
            activation="relu",data_format="channels_first")(y)
+x = Conv2D(filters=40,kernel_size=8,padding="same",
+           activation="relu",data_format="channels_first")(x)
+y = Conv2D(filters=40,kernel_size=8,padding="same",
+           activation="relu",data_format="channels_first")(y)
+x = Conv2D(filters=40,kernel_size=2,padding="same",
+           activation="relu",data_format="channels_first")(x)
+y = Conv2D(filters=40,kernel_size=2,padding="same",
+           activation="relu",data_format="channels_first")(y)
 x = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(x)
 y = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(y)
 x = Conv2D(filters=40,kernel_size=4,padding="same",
            activation="relu",data_format="channels_first")(x)
 y = Conv2D(filters=40,kernel_size=4,padding="same",
+           activation="relu",data_format="channels_first")(y)
+x = Conv2D(filters=40,kernel_size=4,padding="same",
+           activation="relu",data_format="channels_first")(x)
+y = Conv2D(filters=40,kernel_size=4,padding="same",
+           activation="relu",data_format="channels_first")(y)
+x = Conv2D(filters=40,kernel_size=1,padding="same",
+           activation="relu",data_format="channels_first")(x)
+y = Conv2D(filters=40,kernel_size=1,padding="same",
            activation="relu",data_format="channels_first")(y)
 x = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(x)
 y = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(y)
