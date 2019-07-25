@@ -36,9 +36,9 @@ def rms_pred_stop(y_true, y_pred):
 path = "./"
 
 cell = np.load(path+"sca-0_single_tot.npy")
-cell = np.append(cell,np.load(path+"sca-0_single_tot_rev.npy"))
+cell = np.append(cell,np.load(path+"sca-0_single_tot_rev.npy"),axis=0)
 point = np.loadtxt(path+"sca-0_single_teachervalue.dat")[:,3:]
-point = np.append(point,np.loadtxt(path+"sca-0_single_teachervalue_rev.dat"))
+point = np.append(point,np.loadtxt(path+"sca-0_single_teachervalue_rev.dat")[:,3:],axis=0)
 print(cell.shape)
 shape = cell[0][0:1].shape
 cell_test = cell[5000:]
