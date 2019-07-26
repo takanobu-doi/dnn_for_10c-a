@@ -33,6 +33,7 @@ def rms_pred_stop(y_true, y_pred):
 path = "./"
 
 cell = np.load(path+"sumation_track.npy")
+result = np.load(path+"sumation_result.npy")[:,3:]
 
 old_session = KTF.get_session()
 session_config = tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=True))
@@ -50,6 +51,11 @@ start = time.time()
 pred = model.predict([cell[:,0:1],cell[:,1:2]])
 np.save("sumation_pred",pred*factor)
 end = time.time()
-print("Learning time is {} second".format(end-start))
+print("Predicting time is {} second".format(end-start))
+
+start = time.time()
+score  =model.evaluate([cell[:,0:1],cell[:,1:2]],result/factor)
+end = time.time()
+print("Evaluating time is {} second".format(end-start))
 
 KTF.set_session(old_session)
