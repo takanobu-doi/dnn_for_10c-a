@@ -38,9 +38,12 @@ def rms_pred_stop(y_true, y_pred):
 
 path = "./"
 
-cell = np.loadtxt(path+"sca-0_tot.dat",dtype=np.bool).reshape((-1,2,1024,256))
-hough = np.loadtxt(path+"sca-0_hough.dat",dtype=np.int16).reshape((-1,2,1024,360))
-point = np.loadtxt(path+"sca-0_teachervalue.dat")[:,3:]
+cell = np.load(path+"sca-0_tot.npy").reshape((-1,2,1024,256))
+print("sca-0_tot.npy loeaded")
+hough = np.load(path+"sca-0_hough.npy").reshape((-1,2,1024,360))
+print("sca-0_hough.npy loeaded")
+point = np.load(path+"sca-0_teachervalue.npy")[:,3:]
+print("sca-0_teachervalue.npy loeaded")
 print(cell.shape)
 shape_cell = cell[0].shape
 shape_hough = hough[0].shape
@@ -108,7 +111,7 @@ z = Dense(16,activation="sigmoid")(z)
 z = Dropout(0.4)(z)
 Output = Dense(8,activation="relu")(x)
 
-model = Model(inputs=Input,outputs=Output)
+model = Model(inputs=[Input_c, Input_h],outputs=Output)
 model.compile(loss="mse",optimizer="adadelta",metrics=[rms_pred_scat,rms_pred_stop])
 csvlogger = CSVLogger("indirect_norm-7.csv")
 
