@@ -31,7 +31,7 @@ int main()
   std::vector<std::thread> ths(5);
 
   for(int i=0;i<5;i++){
-    ths[i] = std::thread([&sum_num, &mtx](std::string filename, std::stringstream &ofs_tot, std::stringstream &ofs_val, std::stringstream &ofs_hough){
+    ths[i] = std::thread([&sum_num, &mtx](std::string filename, std::ofstream &ofs_tot, std::ofstream &ofs_val, std::ofstream &ofs_hough){
 	std::ifstream ifs_tot(filename+"_tot.dat");
 	std::ifstream ifs_val(filename+"_teachervalue.dat");
 	short in;
@@ -42,7 +42,6 @@ int main()
 	int flag = 0;
 	
 	std::string s;
-	std::stringstream stream;
 	while(getline(ifs_tot, s)){
 	  mtx.lock();
 	  sum_num++;
@@ -68,8 +67,7 @@ int main()
 	    hough.push_back(hough_temp);
 	  }
 	  //**** hough_temp initialization ****//
-	  stream.str("");
-	  stream.clear(std::stringstream::goodbit);
+	  std::stringstream stream;
 	  stream << s;
 	  for(int i=0;i<2;i++){
 	    for(int j=0;j<1024;j++){
@@ -88,7 +86,8 @@ int main()
 	      }
 	    }
 	  }
-	  
+
+	  mtx.lock();
 	  for(int i=0;i<2;i++){
 	    for(int j=0;j<1024;j++){
 	      for(int k=0;k<256;k++){
@@ -106,30 +105,30 @@ int main()
 	  }
 	  ofs_hough << std::endl;
 
-	  stream.str("");
-	  stream.clear(std::stringstream::goodbit);
+	  std::stringstream stream1;
 	  getline(ifs_val, s);
-	  stream << s;
-	  for(int i=0;i<11;i++){
-	    stream >> in;
-	    ofs_val << in << " ";
-	  }
+	  stream1 << s;
+	  double range, theta, phi;
+	  int sax, say, scx, scy, eax, eay, ecx, ecy;
+	  stream1 >> range >> theta >>  phi >> sax >> say >> scx >> scy >> eax >> eay >> ecx >> ecy;
+	  ofs_val << range << " " << theta << " " <<  phi << " " << sax << " " << say << " " << scx << " " << scy << " " << eax << " " << eay << " " << ecx << " " << ecy;
 	  ofs_val << std::endl;
+	  mtx.unlock();
 	  
 	}
 	ifs_tot.close();
 	ifs_val.close();
 	
-      },filename[i], std::ref(ostream_tot[i]), std::ref(ostream_val[i]), std::ref(ostream_hough[i]));
+      },filename[i], std::ref(ofs_tot), std::ref(ofs_val), std::ref(ofs_hough));
   }
   
   show_progress(sum_num, event_num);
 
   for(int i=0;i<5;i++){
     ths[i].join();
-    ofs_tot << ostream_tot[i].str();
-    ofs_val << ostream_val[i].str();
-    ofs_hough << ostream_hough[i].str();
+//    ofs_tot << ostream_tot[i].str();
+//    ofs_val << ostream_val[i].str();
+//    ofs_hough << ostream_hough[i].str();
   }
   
   ofs_tot.close();
