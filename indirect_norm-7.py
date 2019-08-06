@@ -30,19 +30,65 @@ def rms_pred_stop(y_true, y_pred):
     rms = mm*mask
     return K.sqrt(K.mean(K.square(rms)))
 
+def BuildModel(shape=(0,)):
+    if shape==(0,):
+        print("Bad input shape")
+        sys.exit()
+    Input_a = Input(shape=shape)
+    Input_c = Input(shape=shape)
+    x = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(Input_a)
+    y = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(Input_c)
+    x = Conv2D(filters=40,kernel_size=16,padding="same",
+               activation="relu",data_format="channels_first")(x)
+    y = Conv2D(filters=40,kernel_size=16,padding="same",
+               activation="relu",data_format="channels_first")(y)
+    x = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(x)
+    y = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(y)
+    x = Conv2D(filters=40,kernel_size=8,padding="same",
+               activation="relu",data_format="channels_first")(x)
+    y = Conv2D(filters=40,kernel_size=8,padding="same",
+               activation="relu",data_format="channels_first")(y)
+    x = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(x)
+    y = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(y)
+    x = Conv2D(filters=40,kernel_size=4,padding="same",
+               activation="relu",data_format="channels_first")(x)
+    y = Conv2D(filters=40,kernel_size=4,padding="same",
+               activation="relu",data_format="channels_first")(y)
+    x = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(x)
+    y = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(y)
+    x = Flatten()(x)
+    y = Flatten()(y)
+    x = Dense(128,activation="sigmoid")(x)
+    y = Dense(128,activation="sigmoid")(y)
+    x = Dropout(0.3)(x)
+    y = Dropout(0.3)(y)
+    x = Dense(16,activation="sigmoid")(x)
+    y = Dense(16,activation="sigmoid")(y)
+    x = Dropout(0.3)(x)
+    y = Dropout(0,3)(y)
+    z = concatenate([x,y])
+    Output = Dense(8,activation="relu")(z)
+
+    model = Model(inputs=[Input_a,Input_c],outputs=Output)
+    model.compile(loss="mse",optimizer="adadelta",metrics=[rms_pred_scat,rms_pred_stop])
+
+    return model
+
+
 #config = K.tf.ConfigProto()
 #config.gpu_options.allow_growth = True
 
-path = "./"
-
-cell = np.load(path+"sca-0_single_tot.npy")
-point = np.loadtxt(path+"sca-0_single_teachervalue.dat")[:,3:]
-print(cell.shape)
+dirname = "./"
+filename = ["sca-0_ori-0_", "sca-0_ori-1_"]
+for i in range(len(filename)):
+    cell = np.load(dirname+filename+"tot.npy")
+    point = np.loadtxt(dirname+filename+"teachervalue.npy")[:,3:]
+    print(i)
 shape = cell[0][0:1].shape
-cell_test = cell[2700:]
-point_test = point[2700:]
-cell = cell[:2700]
-point = point[:2700]
+cell_test = cell[3000:]
+point_test = point[3000:]
+cell = cell[:3000]
+point = point[:3000]
 
 print(shape)
 
@@ -53,45 +99,9 @@ session = tf.Session(config=session_config)
 KTF.set_session(session)
 KTF.set_learning_phase(1)
 
-Input_a = Input(shape=shape)
-Input_c = Input(shape=shape)
-x = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(Input_a)
-y = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(Input_c)
-x = Conv2D(filters=40,kernel_size=16,padding="same",
-           activation="relu",data_format="channels_first")(x)
-y = Conv2D(filters=40,kernel_size=16,padding="same",
-           activation="relu",data_format="channels_first")(y)
-x = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(x)
-y = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(y)
-x = Conv2D(filters=40,kernel_size=8,padding="same",
-           activation="relu",data_format="channels_first")(x)
-y = Conv2D(filters=40,kernel_size=8,padding="same",
-           activation="relu",data_format="channels_first")(y)
-x = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(x)
-y = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(y)
-x = Conv2D(filters=40,kernel_size=4,padding="same",
-           activation="relu",data_format="channels_first")(x)
-y = Conv2D(filters=40,kernel_size=4,padding="same",
-           activation="relu",data_format="channels_first")(y)
-x = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(x)
-y = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(y)
-x = Flatten()(x)
-y = Flatten()(y)
-x = Dense(128,activation="sigmoid")(x)
-y = Dense(128,activation="sigmoid")(y)
-x = Dropout(0.3)(x)
-y = Dropout(0.3)(y)
-x = Dense(16,activation="sigmoid")(x)
-y = Dense(16,activation="sigmoid")(y)
-x = Dropout(0.3)(x)
-y = Dropout(0,3)(y)
-z = concatenate([x,y])
-Output = Dense(8,activation="relu")(z)
+model = BuildModel(shape)
 
-model = Model(inputs=[Input_a,Input_c],outputs=Output)
-model.compile(loss="mse",optimizer="adadelta",metrics=[rms_pred_scat,rms_pred_stop])
 csvlogger = CSVLogger("indirect_norm-7.csv")
-
 factor = [256.,1024.,256.,1024.,256.,1024.,256.,1024.]
 factor = np.array(factor)
 

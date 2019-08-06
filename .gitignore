@@ -2,3 +2,8 @@
 *.h5
 *.dat
 *.npy
+grouping.py
+hough
+show_group.py
+to_npy.py
+data
