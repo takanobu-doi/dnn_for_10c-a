@@ -1,6 +1,6 @@
-import os
-
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+#import os
+#
+#os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 import numpy as np
 import time
@@ -30,9 +30,9 @@ def rms_pred_stop(y_true, y_pred):
 #config = K.tf.ConfigProto()
 #config.gpu_options.allow_growth = True
 
-path = "./"
+path = "data/"
 
-cell = np.load(path+"sumation_track.npy")
+cell = np.load(path+"sca-0_ori-3_tot.npy")
 
 old_session = KTF.get_session()
 session_config = tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=True))
@@ -48,7 +48,7 @@ factor = np.array(factor)
 
 start = time.time()
 pred = model.predict([cell[:,0:1],cell[:,1:2]])
-np.save("sumation_pred",pred*factor)
+np.save(path+"sca-0_ori-3_pred",pred*factor)
 end = time.time()
 print("Learning time is {} second".format(end-start))
 
