@@ -37,36 +37,36 @@ def BuildModel(shape=(0,)):
         sys.exit()
     Input_a = Input(shape=shape)
     Input_c = Input(shape=shape)
-    x = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(Input_a)
-    y = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(Input_c)
+    x = MaxPooling2D(pool_size=(2,2))(Input_a)
+    y = MaxPooling2D(pool_size=(2,2))(Input_c)
     x = Conv2D(filters=40,kernel_size=16,padding="same",
                activation="relu",data_format="channels_first")(x)
     y = Conv2D(filters=40,kernel_size=16,padding="same",
                activation="relu",data_format="channels_first")(y)
-    x = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(x)
-    y = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(y)
+    x = MaxPooling2D(pool_size=(2,2))(x)
+    y = MaxPooling2D(pool_size=(2,2))(y)
     x = Conv2D(filters=40,kernel_size=8,padding="same",
                activation="relu",data_format="channels_first")(x)
     y = Conv2D(filters=40,kernel_size=8,padding="same",
                activation="relu",data_format="channels_first")(y)
-    x = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(x)
-    y = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(y)
+    x = MaxPooling2D(pool_size=(2,2))(x)
+    y = MaxPooling2D(pool_size=(2,2))(y)
     x = Conv2D(filters=40,kernel_size=4,padding="same",
                activation="relu",data_format="channels_first")(x)
     y = Conv2D(filters=40,kernel_size=4,padding="same",
                activation="relu",data_format="channels_first")(y)
-    x = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(x)
-    y = MaxPooling2D(pool_size=(2,2),data_format="channels_first")(y)
+    x = MaxPooling2D(pool_size=(2,2))(x)
+    y = MaxPooling2D(pool_size=(2,2))(y)
     x = Flatten()(x)
     y = Flatten()(y)
-    x = Dense(128,activation="sigmoid")(x)
-    y = Dense(128,activation="sigmoid")(y)
-    x = Dropout(0.3)(x)
-    y = Dropout(0.3)(y)
+    x = Dense(256,activation="sigmoid")(x)
+    y = Dense(256,activation="sigmoid")(y)
+    x = Dropout(0.5)(x)
+    y = Dropout(0.5)(y)
     x = Dense(16,activation="sigmoid")(x)
     y = Dense(16,activation="sigmoid")(y)
-    x = Dropout(0.3)(x)
-    y = Dropout(0,3)(y)
+    x = Dropout(0.5)(x)
+    y = Dropout(0.5)(y)
     z = concatenate([x,y])
     Output = Dense(8,activation="relu")(z)
 
@@ -79,17 +79,19 @@ def BuildModel(shape=(0,)):
 #config = K.tf.ConfigProto()
 #config.gpu_options.allow_growth = True
 
-dirname = "./"
-filename = ["sca-0_ori-0_", "sca-0_ori-1_"]
+dirname = "data/"
+filename = ["sca-0_ori-0_", "sca-0_ori-1_", "sca-0_ori-2_"]
+cell = np.empty((0, 2, 1024, 256))
+point = np.empty((0, 8))
 for i in range(len(filename)):
-    cell = np.load(dirname+filename+"tot.npy")
-    point = np.loadtxt(dirname+filename+"teachervalue.npy")[:,3:]
+    cell = np.append(cell, np.load(dirname+filename[i]+"tot.npy"), axis=0)
+    point = np.append(point, np.load(dirname+filename[i]+"teachervalue.npy")[:,3:], axis=0)
     print(i)
 shape = cell[0][0:1].shape
-cell_test = cell[3000:]
-point_test = point[3000:]
-cell = cell[:3000]
-point = point[:3000]
+cell_test = cell[5000:]
+point_test = point[5000:]
+cell = cell[:5000]
+point = point[:5000]
 
 print(shape)
 
