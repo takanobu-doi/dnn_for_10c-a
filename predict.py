@@ -1,6 +1,6 @@
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 import numpy as np
 import time
@@ -32,7 +32,7 @@ def rms_pred_stop(y_true, y_pred):
 
 path = "data/"
 
-cell = np.load(path+"sca-0_ori-3_tot.npy")
+#cell = np.load(path+"exp_track_valid.npy")
 
 old_session = KTF.get_session()
 session_config = tf.ConfigProto(gpu_options=tf.GPUOptions(allow_growth=True))
@@ -46,10 +46,24 @@ model = load_model("indirect_norm-7.h5",custom_objects={"rms_pred_scat":rms_pred
 factor = [256.,1024.,256.,1024.,256.,1024.,256.,1024.]
 factor = np.array(factor)
 
+cell = np.load(path+"sca-0_ori-15_notshort_tot.npy")
+point = np.load(path+"sca-0_ori-15_notshort_teachervalue.npy")[:,3:]/factor
 start = time.time()
 pred = model.predict([cell[:,0:1],cell[:,1:2]])
-np.save(path+"sca-0_ori-3_pred",pred*factor)
 end = time.time()
-print("Learning time is {} second".format(end-start))
+np.save(path+"sca-0_ori-15_notshort_pred",pred*factor)
+print(pred.shape)
+#np.save(path+"exp_pred",pred*factor)
+print("Predicting time is {} second (simu)".format(end-start))
+print("Evaluating value is {}".format(model.evaluate([cell[:,0:1],cell[:,1:2]],point)))
+
+cell = np.load(path+"exp_valid_tot.npy")
+point = np.load(path+"exp_valid_teachervalue.npy")[:,3:]/factor
+start = time.time()
+pred = model.predict([cell[:,0:1],cell[:,1:2]])
+end = time.time()
+np.save(path+"exp_valid_pred",pred*factor)
+print("Predicting time is {} second (exp)".format(end-start))
+print("Evaluating value is {}".format(model.evaluate([cell[:,0:1],cell[:,1:2]],point)))
 
 KTF.set_session(old_session)

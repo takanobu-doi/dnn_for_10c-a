@@ -11,7 +11,10 @@ name = sys.argv[1]
 
 tot = np.load(name+"_tot.npy")
 pred = np.load(name+"_pred.npy")
+#if name.split("/")[1][:3] == "exp":
 result = np.load(name+"_teachervalue.npy")[:,3:]
+#else:
+#    result = np.load(name+"_teachervalue.npy")
 
 maxlen = len(tot)-1
 
