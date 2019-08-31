@@ -67,19 +67,17 @@ def BuildModel(shape=(0,)): # build model to extract points
 
 # loading data
 dirname = "data/"
-filename = ["sca-0_ori-8_notshort_", "sca-0_ori-9_notshort_"]
+filename = ["mod_trig-0_", "mod_trig-1_", "mod_trig-2_"]
 cell = np.empty((0, 2, 1024, 256))
 point = np.empty((0, 8))
 for i in range(len(filename)):
     cell = np.append(cell, np.load(dirname+filename[i]+"addbeam.npy"), axis=0)
-    cell = np.append(cell, np.flip(np.load(dirname+filename[i]+"addbeam.npy"), axis=2), axis=0)
     point = np.append(point, np.load(dirname+filename[i]+"teachervalue.npy")[:,3:], axis=0)
-    point = np.append(point, np.load(dirname+filename[i]+"teachervalue.npy")[:,3:]*np.array([0,-1,0,-1,0,-1,0,-1])+np.array([0,1024,0,1024,0,1024,0,1024]), axis=0)
     print(i)
-#cell_test = cell[5000:]
-#point_test = point[5000:]
-#cell = cell[:5000]
-#point = point[:5000]
+cell_test = cell[5000:]
+point_test = point[5000:]
+cell = cell[:5000]
+point = point[:5000]
 #cell = np.load(dirname+"exp_train_tot.npy")
 #point = np.load(dirname+"exp_train_teachervalue.npy")
 #cell_test = np.load(dirname+"exp_valid_tot.npy")
@@ -106,8 +104,7 @@ factor = np.array(factor)
 # train the neural network
 start = time.time()
 model.fit([cell[:,0:1],cell[:,1:2]],point/factor,epochs=200,batch_size=32,
-        validation_split=0.25,
-#          validation_data=[[cell_test[:,0:1],cell_test[:,1:2]],point_test/factor],
+          validation_data=[[cell_test[:,0:1],cell_test[:,1:2]],point_test/factor],
           callbacks=[csvlogger])
 end = time.time()
 print("Learning time is {} second".format(end-start))
