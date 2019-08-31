@@ -1,6 +1,6 @@
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 import numpy as np
 import time
@@ -55,6 +55,15 @@ np.save(path+"sca-0_ori-15_notshort_pred",pred*factor)
 print(pred.shape)
 #np.save(path+"exp_pred",pred*factor)
 print("Predicting time is {} second (simu)".format(end-start))
+print("Evaluating value is {}".format(model.evaluate([cell[:,0:1],cell[:,1:2]],point)))
+
+cell = np.load(path+"center-3_tot.npy")
+point = np.load(path+"center-3_teachervalue.npy")[:,3:]/factor
+start = time.time()
+pred = model.predict([cell[:,0:1],cell[:,1:2]])
+end = time.time()
+np.save(path+"center-3_pred",pred*factor)
+print("Predicting time is {} second (center)".format(end-start))
 print("Evaluating value is {}".format(model.evaluate([cell[:,0:1],cell[:,1:2]],point)))
 
 cell = np.load(path+"exp_valid_tot.npy")

@@ -1,7 +1,7 @@
 import os
 import sys
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 import numpy as np
 import time
@@ -67,7 +67,7 @@ def BuildModel(shape=(0,)): # build model to extract points
 
 # loading data
 dirname = "data/"
-filename = ["mod_trig-0_", "mod_trig-1_", "mod_trig-2_"]
+filename = ["center-0_", "center-1_", "center-2_"]
 cell = np.empty((0, 2, 1024, 256))
 point = np.empty((0, 8))
 for i in range(len(filename)):
