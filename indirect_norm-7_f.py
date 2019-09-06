@@ -67,24 +67,26 @@ def BuildModel(shape=(0,)): # build model to extract points
 
 # loading data
 dirname = "data/"
-#filename = ["center-0_", "center-1_"]
-#cell = np.empty((0, 2, 1024, 256))
-#point = np.empty((0, 8))
-#for i in range(len(filename)):
-#    cell = np.append(cell, np.load(dirname+filename[i]+"addbeam.npy"), axis=0)
-#    point = np.append(point, np.load(dirname+filename[i]+"teachervalue.npy")[:,3:], axis=0)
-#    print(i)
-#cell_test = cell[3000:]
-#point_test = point[3000:]
-#cell = cell[:3000]
-#point = point[:3000]
-cell = np.load(dirname+"exp_train_tot.npy")[:3000]
-point = np.load(dirname+"exp_train_teachervalue.npy")[:3000]
-cell_test = np.load(dirname+"exp_valid_tot.npy")[:1000]
-point_test = np.load(dirname+"exp_valid_teachervalue.npy")[:1000,3:]
+filename = ["sca-0_ori-8_notshort_", "sca-0_ori-9_notshort_"]
+cell = np.empty((0, 2, 1024, 256), dtype=np.float)
+point = np.empty((0, 8))
+for i in range(len(filename)):
+    cell = np.append(cell, np.load(dirname+filename[i]+"addbeam.npy").astype(np.float), axis=0)
+    point = np.append(point, np.load(dirname+filename[i]+"teachervalue.npy")[:,3:], axis=0)
+    print(i)
+cell_test = cell[3000:]
+point_test = point[3000:]
+cell = cell[:3000]
+point = point[:3000]
+#cell = np.load(dirname+"exp_train_tot.npy").astype(np.float)[:3000]
+#point = np.load(dirname+"exp_train_teachervalue.npy")[:3000]
+#cell_test = np.load(dirname+"exp_valid_tot.npy").astype(np.float)[:1000]
+#point_test = np.load(dirname+"exp_valid_teachervalue.npy")[:1000,3:]
 shape = cell[0][0:1].shape
 
 print(shape)
+
+filename = "ori_f"
 
 
 # setup of keras & tensorflow
@@ -97,7 +99,7 @@ KTF.set_learning_phase(1)
 
 model = BuildModel(shape)
 
-csvlogger = CSVLogger("exp.csv")
+csvlogger = CSVLogger(filename+".csv")
 factor = [256.,1024.,256.,1024.,256.,1024.,256.,1024.]
 factor = np.array(factor)
 
@@ -111,11 +113,11 @@ print("Learning time is {} second".format(end-start))
 #model.summary()
 
 # save the neural network
-model.save("exp.h5",{"rms_pred_scat":rms_pred_scat,"rms_pred_stop":rms_pred_stop})
+model.save(filename+".h5",{"rms_pred_scat":rms_pred_scat,"rms_pred_stop":rms_pred_stop})
 
 del cell, point, cell_test, point_test
 
-cell = np.load(dirname+"sca-0_ori-15_notshort_"+"addnoise.npy")
+cell = np.load(dirname+"sca-0_ori-15_notshort_"+"addnoise.npy").astype(np.float)
 
 pred = model.predict([cell[:,0:1],cell[:,1:2]])
 np.save(dirname+"sca-0_ori-15_norshort_pred",pred*factor)
