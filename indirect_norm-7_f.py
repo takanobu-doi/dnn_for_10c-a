@@ -67,26 +67,44 @@ def BuildModel(shape=(0,)): # build model to extract points
 
 # loading data
 dirname = "data/"
-filename = ["sca-0_ori-8_notshort_", "sca-0_ori-9_notshort_"]
-cell = np.empty((0, 2, 1024, 256), dtype=np.float)
-point = np.empty((0, 8))
-for i in range(len(filename)):
-    cell = np.append(cell, np.load(dirname+filename[i]+"addbeam.npy").astype(np.float), axis=0)
-    point = np.append(point, np.load(dirname+filename[i]+"teachervalue.npy")[:,3:], axis=0)
-    print(i)
-cell_test = cell[3000:]
-point_test = point[3000:]
-cell = cell[:3000]
-point = point[:3000]
+#filename = ["sca-0_ori-8_notshort_", "sca-0_ori-9_notshort_"]
+#cell = np.empty((0, 2, 1024, 256), dtype=np.float)
+#point = np.empty((0, 8))
+#for i in range(len(filename)):
+#    cell = np.append(cell, np.load(dirname+filename[i]+"addbeam.npy").astype(np.float), axis=0)
+#    point = np.append(point, np.load(dirname+filename[i]+"teachervalue.npy")[:,3:], axis=0)
+#    print(i)
+#cell_test = cell[3000:]
+#point_test = point[3000:]
+#cell = cell[:3000]
+#point = point[:3000]
 #cell = np.load(dirname+"exp_train_tot.npy").astype(np.float)[:3000]
 #point = np.load(dirname+"exp_train_teachervalue.npy")[:3000]
 #cell_test = np.load(dirname+"exp_valid_tot.npy").astype(np.float)[:1000]
 #point_test = np.load(dirname+"exp_valid_teachervalue.npy")[:1000,3:]
+
+cell = np.empty((0, 2, 1024, 256))
+point = np.empty((0, 8))
+for i in [178, 179, 182, 183, 184]:
+    cell = np.append(cell, np.load("../../TPC_w_NN/data/track/run0"+str(i)+"_track.npy"), axis=0)
+    point = np.append(point, np.load("../../TPC_w_NN/data/result/run0"+str(i)+"_result.npy")[:,5:], axis=0)
+    print(i, len(cell))
+cell = cell[:3000]
+point = point[:3000]
+cell_test = np.empty((0, 2, 1024, 256))
+point_test = np.empty((0,8))
+for i in [190, 191]:
+    cell_test = np.append(cell_test, np.load("../../TPC_w_NN/data/track/run0"+str(i)+"_track.npy"), axis=0)
+    point_test = np.append(point_test, np.load("../../TPC_w_NN/data/result/run0"+str(i)+"_result.npy")[:,5:], axis=0)
+    print(i, len(cell_test))
+cell_test = cell_test[:1000]
+point_test = point_test[:1000]
+
 shape = cell[0][0:1].shape
 
 print(shape)
 
-filename = "ori_f"
+filename = "exp_ff"
 
 
 # setup of keras & tensorflow

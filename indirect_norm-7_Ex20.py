@@ -10,7 +10,6 @@ from keras.models import Model
 from keras.layers import Input,Conv2D,MaxPooling2D,AveragePooling2D
 from keras.layers import Flatten,Dense,Dropout,concatenate
 from keras.callbacks import CSVLogger
-from keras.utils import multi_gpu_model
 import keras.backend as K
 import keras.backend.tensorflow_backend as KTF
 import tensorflow as tf
@@ -68,21 +67,19 @@ def BuildModel(shape=(0,)): # build model to extract points
 
 # loading data
 dirname = "data/"
-filename = ["someEx-0_", "someEx-1_"]
-cell = np.empty((0, 2, 1024, 256))
-point = np.empty((0, 8))
-for i in range(len(filename)):
-    cell = np.append(cell, np.load(dirname+filename[i]+"addbeam.npy"), axis=0)
-    point = np.append(point, np.load(dirname+filename[i]+"teachervalue.npy")[:,3:], axis=0)
-    print(i)
-cell_test = cell[3000:]
-point_test = point[3000:]
-cell = cell[:3000]
-point = point[:3000]
-#cell = np.load(dirname+"exp_train_tot.npy")[:3000]
-#point = np.load(dirname+"exp_train_teachervalue.npy")[:3000]
-#cell_test = np.load(dirname+"exp_valid_tot.npy")[:1000]
-#point_test = np.load(dirname+"exp_valid_teachervalue.npy")[:1000,3:]
+#filename = ["center-0_", "center-1_"]
+#cell = np.empty((0, 2, 1024, 256))
+#point = np.empty((0, 8))
+#for i in range(len(filename)):
+#    cell = np.append(cell, np.load(dirname+filename[i]+"addbeam.npy"), axis=0)
+#    point = np.append(point, np.load(dirname+filename[i]+"teachervalue.npy")[:,3:], axis=0)
+#    print(i)
+#cell_test = cell[3000:]
+#point_test = point[3000:]
+#cell = cell[:3000]
+#point = point[:3000]
+cell = np.load(dirname+"Ex_20_test_tot.npy")[:3000]
+point = np.load(dirname+"Ex_20_test_teachervalue.npy")[:3000,3:]
 shape = cell[0][0:1].shape
 
 print(shape)
@@ -98,20 +95,21 @@ KTF.set_learning_phase(1)
 
 model = BuildModel(shape)
 
-csvlogger = CSVLogger("someEx.csv")
+csvlogger = CSVLogger("Ex20.csv")
 factor = [256.,1024.,256.,1024.,256.,1024.,256.,1024.]
 factor = np.array(factor)
 
 # train the neural network
 start = time.time()
 model.fit([cell[:,0:1],cell[:,1:2]],point/factor,epochs=200,batch_size=32,
-          validation_data=[[cell_test[:,0:1],cell_test[:,1:2]],point_test/factor],
           callbacks=[csvlogger])
 end = time.time()
 print("Learning time is {} second".format(end-start))
 #model.summary()
 
 # save the neural network
-model.save("someEx.h5",{"rms_pred_scat":rms_pred_scat,"rms_pred_stop":rms_pred_stop})
+model.save("Ex20.h5",{"rms_pred_scat":rms_pred_scat,"rms_pred_stop":rms_pred_stop})
+
+del cell, point, cell_test, point_test
 
 KTF.set_session(old_session)
