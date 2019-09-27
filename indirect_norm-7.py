@@ -68,17 +68,17 @@ def BuildModel(shape=(0,)): # build model to extract points
 
 # loading data
 dirname = "data/"
-filename = ["someEx-0_", "someEx-1_"]
+filename = ["fix_dif-0_", "fix_dif-1_", "fix_dif-2_", "fix_dif-3_"]
 cell = np.empty((0, 2, 1024, 256))
 point = np.empty((0, 8))
 for i in range(len(filename)):
     cell = np.append(cell, np.load(dirname+filename[i]+"addbeam.npy"), axis=0)
     point = np.append(point, np.load(dirname+filename[i]+"teachervalue.npy")[:,3:], axis=0)
     print(i)
-cell_test = cell[3000:]
-point_test = point[3000:]
-cell = cell[:3000]
-point = point[:3000]
+cell_test = cell[6000:]
+point_test = point[6000:]
+cell = cell[:6000]
+point = point[:6000]
 #cell = np.load(dirname+"exp_train_tot.npy")[:3000]
 #point = np.load(dirname+"exp_train_teachervalue.npy")[:3000]
 #cell_test = np.load(dirname+"exp_valid_tot.npy")[:1000]
@@ -98,7 +98,7 @@ KTF.set_learning_phase(1)
 
 model = BuildModel(shape)
 
-csvlogger = CSVLogger("someEx.csv")
+csvlogger = CSVLogger("fix_dif.csv")
 factor = [256.,1024.,256.,1024.,256.,1024.,256.,1024.]
 factor = np.array(factor)
 
@@ -112,6 +112,6 @@ print("Learning time is {} second".format(end-start))
 #model.summary()
 
 # save the neural network
-model.save("someEx.h5",{"rms_pred_scat":rms_pred_scat,"rms_pred_stop":rms_pred_stop})
+model.save("fix_dif.h5",{"rms_pred_scat":rms_pred_scat,"rms_pred_stop":rms_pred_stop})
 
 KTF.set_session(old_session)
